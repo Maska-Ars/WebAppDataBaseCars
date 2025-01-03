@@ -1,0 +1,128 @@
+﻿@using WebAppTest.Models
+@model WebAppTest.ViewModels.ViewModel
+@{
+    ViewData["Title"] = "Таблица: Машины";
+}
+<h2>Машины</h2>
+<h6>Фильтр</h6>
+<table>
+    <thead>
+        <th style="border: 1px outset rgb(0, 0, 0);">Номер</th>
+        <th style="border: 1px outset rgb(0, 0, 0);">Бренд</th>
+        <th style="border: 1px outset rgb(0, 0, 0);">Модель</th>
+        <th style="border: 1px outset rgb(0, 0, 0);">Цвет</th>
+    </thead>
+    <tbody>
+        <form method="get" asp-action="Filter">
+            <tr>
+                <td style="border: 1px outset rgb(0, 0, 0);">
+                    <input type="text" name="searchNumber"/>
+                </td>
+                <td style="border: 1px outset rgb(0, 0, 0);">
+                    <select name="brand">
+                    @foreach (Brand brand in Model.Brands)
+                    {
+                        <option value=@brand.Title>@brand.Title</option>    
+                    }
+                    </select>
+                </td>
+                <td style="border: 1px outset rgb(0, 0, 0);">
+                    <input type="text" name="searchModel"/>
+                </td>
+                <td style="border: 1px outset rgb(0, 0, 0);">
+                    <input type="text" name="searchColor"/>
+                </td>
+                <td>
+                    <input type="submit" value="Применить"/>
+                </td>
+            </tr>
+        </form>
+    </tbody>
+</table>
+<p></p>
+<h6>Найденная информация</h6>
+<table>
+    <thead>
+        <th style="border: 1px outset rgb(0, 0, 0);">Номер</th>
+        <th style="border: 1px outset rgb(0, 0, 0);">Бренд</th>
+        <th style="border: 1px outset rgb(0, 0, 0);">Модель</th>
+        <th style="border: 1px outset rgb(0, 0, 0);">Цвет</th>
+    </thead>
+    <tbody>
+    @foreach (Car car in Model.Cars)
+    {
+        <tr>
+            <td style="border: 1px outset rgb(0, 0, 0);">
+                <form method="get" asp-action="Edit">
+                    <input type="hidden" name="number" value=@car.Number />
+                    <input type="text" name="newNumber" value=@car.Number />
+                </form>
+            </td>
+            <td style="border: 1px outset rgb(0, 0, 0);">
+                <form method="get" asp-action="Edit">
+                    <input type="hidden" name="number" value=@car.Number />
+                    <select name="brand">
+                    @foreach (Brand brand in Model.Brands)
+                    {
+                        if (car.Brand == brand.Title)
+                        {
+                            <option selected value=@brand.Title>@brand.Title</option>
+                        }
+                        else
+                        {
+                            <option value=@brand.Title>@brand.Title</option> 
+                        }
+                    }
+                    </select>
+                </form>
+            </td>
+            <td style="border: 1px outset rgb(0, 0, 0);">
+                <form method="get" asp-action="Edit">
+                    <input type="hidden" name="number" value=@car.Number />
+                    <input type="text" name="model" value=@car.Model />
+                </form>
+            </td>
+            <td style="border: 1px outset rgb(0, 0, 0);">
+                <form method="get" asp-action="Edit">
+                    <input type="hidden" name="number" value=@car.Number />
+                    <input type="text" name="color" value=@car.Color />
+                </form>
+            </td>
+            <td>
+                <form method="get" asp-action="Delete">
+                    <input type="hidden" name="number" value=@car.Number />
+                    <input type="submit" value="Удалить" />
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p></p>
+<h6>Добавление элемента</h6>
+<div>
+    <form method="get" asp-action="Add">
+    <tr>
+        <td style="border: 1px outset rgb(0, 0, 0);">
+            <input type="text" name="number" required/>
+        </td>
+        <td style="border: 1px outset rgb(0, 0, 0);">
+            <select name="brand">
+            @foreach (Brand brand in Model.Brands)
+            {
+                <option value=@brand.Title>@brand.Title</option>    
+            }
+            </select>
+        </td>
+        <td style="border: 1px outset rgb(0, 0, 0);">
+            <input type="text" name="model" required/>
+        </td>
+        <td style="border: 1px outset rgb(0, 0, 0);">
+            <input type="text" name="color" required/>
+        </td>
+        <td>
+            <input type="submit" value="Добавить" required/>
+        </td>
+    </tr>
+</form>
+</div>

@@ -23,39 +23,7 @@ namespace WebAppTest.Controllers
 
         public IActionResult Cars()
         {
-            return View(_context.Cars);
-        }
-
-        [HttpGet]
-        public IActionResult Cars(string? number, string? newNumber, string? brand, string? model, string? color)
-        {
-            Console.WriteLine($"{number}, {newNumber}, {brand}, {model}, {color}");
-
-            if (number == null ) 
-            {
-                Console.WriteLine("Пришел запрос без номера машины");
-            }
-            else
-            {
-                if (newNumber != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
-                if (brand != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
-                if (model != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
-                if (color != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
-            }
-
-            return View(_context.Cars);
+            return Redirect("~/Cars/"); ;
         }
 
         public IActionResult Owners()

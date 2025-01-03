@@ -20,3 +20,22 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.demotable {
+    counter-reset: schetchik -1; /* счётчик с названием "schetchik" работает в рамках класса .demotable */
+}
+
+    .demotable tr {
+        counter-increment: schetchik; /* при встрече тега tr счётчик с названием "schetchik" увеличивается на единицу */
+    }
+
+        .demotable tr:before {
+            padding: .1em .5em;
+            border: 1px solid;
+        }
+
+        .demotable tr:before {
+            content: counter(schetchik); /* значение счётчика с названием "schetchik" записывается в первую клетку строки */
+            display: table-cell;
+            vertical-align: middle;
+        }
