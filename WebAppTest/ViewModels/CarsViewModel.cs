@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace WebAppTest.ViewModels
+﻿namespace WebAppTest.ViewModels
 {
-    public class ViewModel
+    public class CarsViewModel
     {
         public IEnumerable<Car> Cars { get; set; } = Enumerable.Empty<Car>();
         public IEnumerable<Brand> Brands { get; set; } = Enumerable.Empty<Brand>();

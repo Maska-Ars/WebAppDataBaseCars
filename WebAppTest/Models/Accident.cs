@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public partial class Accident
 {
+    public int Id { get; set; }
+
     public string Number { get; set; } = null!;
 
     public DateOnly Date { get; set; }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public partial class Mileage
 {
+    public int Id { get; set; }
+
     public string Number { get; set; } = null!;
 
     public DateOnly FixationDate { get; set; }

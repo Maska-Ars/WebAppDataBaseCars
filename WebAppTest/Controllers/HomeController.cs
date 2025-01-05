@@ -23,12 +23,27 @@ namespace WebAppTest.Controllers
 
         public IActionResult Cars()
         {
-            return Redirect("~/Cars/"); ;
+            return Redirect("~/Cars/");
         }
 
         public IActionResult Owners()
         {
-            return View(_context.Owners);
+            return Redirect("~/Owners/");
+        }
+
+        public IActionResult Mileages()
+        {
+            return Redirect("~/Mileages/");
+        }
+
+        public IActionResult Brands()
+        {
+            return Redirect("~/Brands/");
+        }
+
+        public IActionResult Accidents()
+        {
+            return Redirect("~/Accidents/");
         }
 
         public IActionResult Privacy()

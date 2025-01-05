@@ -30,10 +30,11 @@ public partial class CarsContext : DbContext
     {
         modelBuilder.Entity<Accident>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("accident");
+            entity.HasKey(e => e.Id).HasName("accident_pkey");
 
+            entity.ToTable("accident");
+
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.Number)
                 .HasMaxLength(9)
@@ -49,11 +50,9 @@ public partial class CarsContext : DbContext
 
         modelBuilder.Entity<Brand>(entity =>
         {
-            entity.HasKey(e => new { e.Title, e.FullTitle }).HasName("brands_pkey");
+            entity.HasKey(e => e.Title).HasName("brands_pkey");
 
             entity.ToTable("brands");
-
-            entity.HasIndex(e => e.Title, "brands_title_key").IsUnique();
 
             entity.Property(e => e.Title).HasColumnName("title");
             entity.Property(e => e.FullTitle).HasColumnName("full_title");
@@ -82,10 +81,11 @@ public partial class CarsContext : DbContext
 
         modelBuilder.Entity<Mileage>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("mileage");
+            entity.HasKey(e => e.Id).HasName("mileage_pkey");
 
+            entity.ToTable("mileage");
+
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.FixationDate).HasColumnName("fixationDate");
             entity.Property(e => e.FixationValue).HasColumnName("fixationValue");
             entity.Property(e => e.Number)
@@ -100,10 +100,11 @@ public partial class CarsContext : DbContext
 
         modelBuilder.Entity<Owner>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("owner");
+            entity.HasKey(e => e.Id).HasName("owner_pkey");
 
+            entity.ToTable("owner");
+
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Number)
                 .HasMaxLength(9)
