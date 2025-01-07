@@ -31,8 +31,9 @@ public partial class CarsContext : DbContext
         modelBuilder.Entity<Accident>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("accident_pkey");
-
             entity.ToTable("accident");
+            entity.ToTable(b => b.HasCheckConstraint("check_car_number",
+                "number::text ~* '[А-ЯA-Z]{1}[0-9]{3}[А-ЯA-Z]{2}[0-9]{2,3}'::text"));
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Date).HasColumnName("date");
@@ -51,7 +52,6 @@ public partial class CarsContext : DbContext
         modelBuilder.Entity<Brand>(entity =>
         {
             entity.HasKey(e => e.Title).HasName("brands_pkey");
-
             entity.ToTable("brands");
 
             entity.Property(e => e.Title).HasColumnName("title");
@@ -62,9 +62,9 @@ public partial class CarsContext : DbContext
         modelBuilder.Entity<Car>(entity =>
         {
             entity.HasKey(e => e.Number).HasName("car_pkey");
-
             entity.ToTable("car");
-
+            entity.ToTable(b => b.HasCheckConstraint("check_car_number",
+                "number::text ~* '[А-ЯA-Z]{1}[0-9]{3}[А-ЯA-Z]{2}[0-9]{2,3}'::text"));
             entity.Property(e => e.Number)
                 .HasMaxLength(9)
                 .HasColumnName("number");
@@ -103,6 +103,8 @@ public partial class CarsContext : DbContext
             entity.HasKey(e => e.Id).HasName("owner_pkey");
 
             entity.ToTable("owner");
+            entity.ToTable(b => b.HasCheckConstraint("check_car_number",
+                "number::text ~* '^[А-ЯA-Z]{1}[0-9]{3}[А-ЯA-Z]{2}[0-9]{2,3}$'::text"));
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Name).HasColumnName("name");

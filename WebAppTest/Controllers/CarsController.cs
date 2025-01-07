@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Xml.Linq;
 using WebAppTest.ViewModels;
 
@@ -28,61 +29,97 @@ namespace WebAppTest.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(string? number, string? newNumber, string? brand, string? model, string? color)
+        public IActionResult Edit(string? id, string? newNumber, string? brand, string? model, string? color)
         {
-            Console.WriteLine($"{number}, {newNumber}, {brand}, {model}, {color}");
-            if (number == null)
-            {
-                Console.WriteLine("Пришел запрос без номера машины");
-            }
+            string? error = null;
+            if (id == null)
+                error = "Элемент не выбран";
             else
             {
-                if (newNumber != null)
+                Car? e = _context.Cars.Where(e => e.Number == id).FirstOrDefault();
+                if(e == null)
+                    error = $"Выбранного элемента не существует";
+                else
                 {
-                    Console.WriteLine("Редактируем базу данных");
+                    if (newNumber != null) { e.Number = newNumber; }
+                    else if (brand != null) { e.Brand = brand; }
+                    else if (model != null) { e.Model = model; }
+                    else if (color != null) { e.Color = color; }
+
+                    try
+                    {
+                        _context.Cars.Update(e);
+                        _context.SaveChanges();
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        if (ex.InnerException != null)
+                        {
+                            PostgresException inner = (PostgresException)ex.InnerException;
+                            if (inner.SqlState == "23503")
+                                error = $"Нельзя добавить запись с брендом, " +
+                                    $"отсуствующем в таблице Бренды";
+                        }
+                        else
+                        {
+                            error = "Произошла непредвиденная ошибка";
+                            Console.WriteLine(ex);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex.Message);
+                    }
                 }
-                else if (brand != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
-                else if (model != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
-                else if (color != null)
-                {
-                    Console.WriteLine("Редактируем базу данных");
-                }
+                
             }
 
             return View("Index", new CarsViewModel()
             {
                 Cars = _context.Cars.ToList(),
-                Brands = _context.Brands.ToList()
+                Brands = _context.Brands.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
-        public IActionResult Delete(string? number)
+        public IActionResult Delete(string? id)
         {
-            if (number != null)
+            string? error = null;
+            if (id == null)
+                error = "Элемент не выбран";
+            else
             {
-                Console.WriteLine($"Удаляем элемент с номером: {number}");
+                Car? e = _context.Cars.Where(e => e.Number == id).FirstOrDefault();
+                if (e == null)
+                    error = $"Выбранного элемента не существует";
+                else
+                {
+                    try
+                    {
+                        _context.Cars.Remove(e);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex.Message);
+                    }
+                }
             }
             return View("Index", new CarsViewModel()
             {
                 Cars = _context.Cars.ToList(),
-                Brands = _context.Brands.ToList()
+                Brands = _context.Brands.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
         public IActionResult Filter(string? searchNumber, string? searchBrand, string? searchModel, string? searchColor)
         {
-            Console.WriteLine("Фильтр");
-            Console.WriteLine($"{searchNumber}, {searchBrand}, {searchModel}, {searchColor}");
-
-            var items = _context.Cars.FromSql($"SELECT * FROM car");
+            var items = _context.Cars.Where(e => e == e);
 
             if (searchNumber != null)
                 items = from Car car in items
@@ -109,64 +146,51 @@ namespace WebAppTest.Controllers
         }
 
         [HttpGet]
-        public IActionResult Sort(int? idColumn, int? up)
-        {
-            if (idColumn == null || idColumn < 0 || idColumn > 3)
-            {
-                return View("Index", new CarsViewModel()
-                {
-                    Cars = _context.Cars.ToList(),
-                    Brands = _context.Brands.ToList()
-                });
-            }
-            if (up == null || up < -1 || up > 1)
-            {
-                return View("Index", new CarsViewModel()
-                {
-                    Cars = _context.Cars.ToList(),
-                    Brands = _context.Brands.ToList()
-                });
-            }
-
-
-            var cars = _context.Cars;
-            return View("Index", new CarsViewModel()
-            {
-                Cars = cars.ToList(),
-                Brands = _context.Brands.ToList()
-            });
-        }
-
-        [HttpGet]
         public IActionResult Add(string? number, string? brand, string? model, string? color)
         {
+            string? error = null;
             if (number == null || brand == null || model == null || color == null)
+                error = "Не уаказан один из параметров";
+            else
             {
-                return View("Index", new CarsViewModel()
+                try
                 {
-                    Cars = _context.Cars.ToList(),
-                    Brands = _context.Brands.ToList()
-                });
+                    _context.Cars.Add(new Car
+                    {
+                        Number = number,
+                        Brand = brand,
+                        Model = model,
+                        Color = color
+
+                    });
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        PostgresException e = (PostgresException)ex.InnerException;
+                        if (e.SqlState == "23503")
+                            error = $"Нельзя добавить запись с брендом, " +
+                                $"отсуствующем в таблице Бренды";
+                    }
+                    else
+                    {
+                        error = "Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    error = $"Произошла непредвиденная ошибка";
+                    Console.WriteLine(ex);
+                }
             }
-
-            Console.WriteLine("Добавление");
-            Console.WriteLine($"{number}, {brand}, {model}, {color}");
-
-            _context.Cars.Add(new Car
-            {
-                Number = number,
-                Brand = brand,
-                Model = model,
-                Color = color
-
-            });
-            _context.SaveChanges();
-
-
             return View("Index", new CarsViewModel()
             {
                 Cars = _context.Cars.ToList(),
-                Brands = _context.Brands.ToList()
+                Brands = _context.Brands.ToList(),
+                Error = error
             });
         }
 

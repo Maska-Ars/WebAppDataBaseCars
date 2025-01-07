@@ -19,6 +19,10 @@
 @{
     ViewData["Title"] = "Аварии";
 }
+@if (Model.Error != null)
+{
+     <div class="error">@Model.Error</div>   
+}
 <h2>Аварии</h2>
 <h6>Фильтр</h6>
 <table class="database">

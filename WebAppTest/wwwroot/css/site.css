@@ -21,6 +21,12 @@ body {
   margin-bottom: 60px;
 }
 
+
+.error {
+    background-color: #FFA07A;
+    text-align: center;
+}
+
 .database {
 
 }

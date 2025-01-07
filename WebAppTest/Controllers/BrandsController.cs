@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using WebAppTest.ViewModels;
 
 namespace WebAppTest.Controllers
@@ -27,37 +28,29 @@ namespace WebAppTest.Controllers
         [HttpGet]
         public IActionResult Edit(string? id, string? title, string? fullTitle, string? country)
         {
+            string? error = null;
             if (id == null)
-            {
-                Console.WriteLine("Пришел запрос без id записи");
-            }
+                error = "Элемент не выбран";
             else
             {
                 Brand? e = _context.Brands.Where(e => e.Title == id).FirstOrDefault();
                 if (e == null)
-                {
-                    Console.WriteLine($"Элемент с id: {id} был удален");
-                }
+                    error = $"Выбранного элемента не существует";
                 else
                 {
-                    if (title != null)
-                    {
-                        e.Title = title;
-                        _context.Brands.Update(e);
-                        _context.SaveChanges();
-                    }
-                    else if (fullTitle != null)
-                    {
-                        e.FullTitle = fullTitle;
-                        _context.Brands.Update(e);
-                        _context.SaveChanges();
-                    }
-                    else if (country != null)
-                    {
-                        e.Country = country;
-                        _context.Brands.Update(e);
-                        _context.SaveChanges();
+                    if (title != null) { e.Title = title; }
+                    else if (fullTitle != null) { e.FullTitle = fullTitle; }
+                    else if (country != null) { e.Country = country; }
 
+                    try
+                    {
+                        _context.Brands.Update(e);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex.Message);
                     }
                 }
             }
@@ -70,55 +63,87 @@ namespace WebAppTest.Controllers
         [HttpGet]
         public IActionResult Delete(string? id)
         {
-            if (id != null)
+            string? error = null;
+            if (id == null)
+                error = "Элемент не выбран";
+            else
             {
                 Brand? e = _context.Brands.Where(e => e.Title == id).FirstOrDefault();
                 if (e == null)
-                {
-                    Console.WriteLine($"Элемент с id: {id} уже был удален");
-                }
+                    error = $"Выбранного элемента не существует";
                 else
                 {
-                    _context.Brands.Remove(e);
-                    _context.SaveChanges();
-                    Console.WriteLine($"Элемент с id: {id} был удален");
+                    try
+                    {
+                        _context.Brands.Remove(e);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex.Message);
+                    }
                 }
             }
             return View("Index", new BrandsViewModel
             {
-                Brands = _context.Brands.ToList()
+                Brands = _context.Brands.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
         public IActionResult Add(string? title, string? fullTitle, string? country)
         {
+            string? error = null;
             if (title == null || fullTitle == null || country == null)
+                error = "Не уаказан один из параметров";
+            else
             {
-                return View("Index", new BrandsViewModel
+                try
                 {
-                    Brands = _context.Brands.ToList()
-                });
+                    _context.Brands.Add(new Brand
+                    {
+                        Title = title,
+                        FullTitle = fullTitle,
+                        Country = country
+                    });
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        PostgresException e = (PostgresException)ex.InnerException;
+                        if (e.SqlState == "23503")
+                            error = $"Нельзя добавить запись с номером машины, " +
+                                $"отсуствующем в таблице машины";
+                    }
+                    else
+                    {
+                        error = "Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    error = $"Произошла непредвиденная ошибка";
+                    Console.WriteLine(ex);
+                }
             }
-
-            _context.Brands.Add(new Brand
-            {
-                Title = title,
-                FullTitle = fullTitle,
-                Country = country
-            });
-            _context.SaveChanges();
+            
 
             return View("Index", new BrandsViewModel
             {
-                Brands = _context.Brands.ToList()
+                Brands = _context.Brands.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
         public IActionResult Filter(string? title, string? fullTitle, string? country)
         {
-            var items = _context.Brands.FromSql($"SELECT * FROM brands");
+            var items = _context.Brands.Where(e => e == e);
 
             if (title != null)
                 items = from Brand i in items

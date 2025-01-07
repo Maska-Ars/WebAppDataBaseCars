@@ -19,6 +19,10 @@
 @{
     ViewData["Title"] = "Показания пройденного расстояния";
 }
+@if (Model.Error != null)
+{
+     <div class="error">@Model.Error</div>   
+}
 <h2>Показания пройденного расстояния</h2>
 <h6>Фильтр</h6>
 <table class="database">

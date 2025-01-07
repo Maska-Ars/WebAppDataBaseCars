@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using WebAppTest.ViewModels;
 
 namespace WebAppTest.Controllers
@@ -28,102 +29,121 @@ namespace WebAppTest.Controllers
         [HttpGet]
         public IActionResult Edit(int? id, string? newNumber, DateOnly? date, long? value)
         {
-            Console.WriteLine($"{id}, {newNumber}, {date}, {value}");
+            string? error = null;
             if (id == null)
-            {
-                Console.WriteLine("Пришел запрос без id записи");
-            }
+                error = "Элемент не выбран";
             else
             {
                 Mileage? e = _context.Mileages.Where(e => e.Id == id).FirstOrDefault();
                 if (e == null)
-                {
-                    Console.WriteLine($"Элемент с id: {id} был удален");
-                }
+                    error = $"Выбранного элемента не существует";
                 else
                 {
-                    if (newNumber != null)
-                    {
-                        Console.WriteLine("Редактируем базу данных");
-                        e.Number = newNumber;
-                        _context.Mileages.Update(e);
-                        _context.SaveChanges();
-                    }
-                    else if (date != null)
-                    {
-                        Console.WriteLine("Редактируем базу данных");
-                        e.FixationDate = (DateOnly)date;
-                        _context.Mileages.Update(e);
-                        _context.SaveChanges();
-                    }
-                    else if (value != null)
-                    {
-                        Console.WriteLine("Редактируем базу данных");
-                        e.FixationValue = (long)value;
-                        _context.Mileages.Update(e);
-                        _context.SaveChanges();
+                    if (newNumber != null) { e.Number = newNumber; }
+                    else if (date != null) { e.FixationDate = (DateOnly)date; }
+                    else if (value != null) { e.FixationValue = (long)value; }
 
+                    try
+                    {
+                        _context.Mileages.Update(e);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex.Message);
                     }
                 }
             }
             return View("Index", new MileagesViewModel
             {
                 Mileages = _context.Mileages.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
         public IActionResult Delete(int? id)
         {
-            if (id != null)
+            string? error = null;
+            if (id == null)
+                error = "Элемент не выбран";
+            else
             {
                 Mileage? e = _context.Mileages.Where(e => e.Id == id).FirstOrDefault();
                 if (e == null)
-                {
-                    Console.WriteLine($"Элемент с id: {id} уже был удален");
-                }
+                    error = $"Выбранного элемента не существует";
                 else
                 {
-                    _context.Mileages.Remove(e);
-                    _context.SaveChanges();
-                    Console.WriteLine($"Элемент с id: {id} был удален");
+                    try
+                    {
+                        _context.Mileages.Remove(e);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        error = $"Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex.Message);
+                    }
                 }
             }
             return View("Index", new MileagesViewModel()
             {
                 Mileages = _context.Mileages.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
         public IActionResult Add(string? number, DateOnly? date, long? value)
         {
+            string? error = null;
             if (number == null || date == null || value == null)
+                error = "Не уаказан один из параметров";
+            else
             {
-                return View("Index", new MileagesViewModel()
+                try
                 {
-                    Mileages = _context.Mileages.ToList(),
-                });
+                    _context.Mileages.Add(new Mileage
+                    {
+                        Number = number,
+                        FixationDate = (DateOnly)date,
+                        FixationValue = (long)value
+                    });
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        PostgresException e = (PostgresException)ex.InnerException;
+                        if (e.SqlState == "23503")
+                            error = $"Нельзя добавить запись с номером машины, " +
+                                $"отсуствующем в таблице машины";
+                    }
+                    else
+                    {
+                        error = "Произошла непредвиденная ошибка";
+                        Console.WriteLine(ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    error = $"Произошла непредвиденная ошибка";
+                    Console.WriteLine(ex);
+                }
             }
-
-            _context.Mileages.Add(new Mileage
-            {
-                Number = number,
-                FixationDate = (DateOnly)date,
-                FixationValue = (long)value
-            });
-            _context.SaveChanges();
-
             return View("Index", new MileagesViewModel()
             {
                 Mileages = _context.Mileages.ToList(),
+                Error = error
             });
         }
 
         [HttpGet]
         public IActionResult Filter(string? number, DateOnly? date, long? value)
         {
-            var items = _context.Mileages.FromSql($"SELECT * FROM mileage");
+            var items = _context.Mileages.Where(e => e == e);
 
             if (number != null)
                 items = from Mileage i in items

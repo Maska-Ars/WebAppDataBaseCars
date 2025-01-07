@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Владельцы";
 }
+@if (Model.Error != null)
+{
+    <div class="error">@Model.Error</div>   
+}
 <h2>Владельцы</h2>
 <h6>Фильтр</h6>
 <table class="database">
@@ -80,25 +84,27 @@
 <p></p>
 <h6>Добавление элемента</h6>
 <div>
-    <form method="get" asp-action="Add">
-    <tr>
-        <td style="border: 1px outset rgb(0, 0, 0);">
-            <input type="text" name="number" required
-                pattern="^[А-ЯA-Z]{1}[0-9]{3}[А-ЯA-Z]{2}[0-9]{2,3}$"
-                title="A111AA111"/>
-        </td>
-        <td style="border: 1px outset rgb(0, 0, 0);">
-            <input type="text" name="secondName" required/>
-        </td>
-        <td style="border: 1px outset rgb(0, 0, 0);">
-            <input type="text" name="name" required/>
-        </td>
-        <td style="border: 1px outset rgb(0, 0, 0);">
-            <input type="text" name="surname" required/>
-        </td>
-        <td>
-            <input type="submit" value="Добавить" required/>
-        </td>
-    </tr>
-</form>
+    <table class="database">
+        <form method="get" asp-action="Add">
+            <tr>
+                <td>
+                    <input type="text" name="number" required
+                        pattern="^[А-ЯA-Z]{1}[0-9]{3}[А-ЯA-Z]{2}[0-9]{2,3}$"
+                        title="A111AA111"/>
+                </td>
+                <td>
+                    <input type="text" name="secondName" required/>
+                </td>
+                <td>
+                    <input type="text" name="name" required/>
+                </td>
+                <td>
+                    <input type="text" name="surname" required/>
+                </td>
+                <td>
+                    <input type="submit" value="Добавить" required/>
+                </td>
+            </tr>
+        </form>
+    </table>
 </div>
