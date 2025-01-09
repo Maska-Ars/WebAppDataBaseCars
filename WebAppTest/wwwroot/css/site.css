@@ -27,6 +27,16 @@ body {
     text-align: center;
 }
 
+.sub {
+    background-color: #00FF00;
+}
+
+input::placeholder {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .database {
 
 }
@@ -37,6 +47,10 @@ body {
     .database td {
         border: 1px solid rgb(0, 0, 0);
     }
+        .database td:hover {
+            background-color: #FFA07A;
+        }
+       
         .database td > input {
             outline: none;
             border: none;
@@ -45,7 +59,15 @@ body {
         .database td > form > input {
             outline: none;
             border: none;
+            word-break: normal;
+            width:revert-layer;
         }
+
+            .database td > form > input::placeholder {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
 
         .database td:last-child {
             border: none;

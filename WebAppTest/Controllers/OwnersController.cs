@@ -26,7 +26,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Edit(int? id, 
             string? newNumber, string? secondName, string? name, string? surname)
         {
@@ -85,7 +85,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Delete(int? id)
         {
             string? error = null;
@@ -146,7 +146,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Add(string? number, string? secondName, string? name, string? surname)
         {
             string? error = null;
@@ -190,14 +190,12 @@ namespace WebAppTest.Controllers
                 }
             }
             
-
             return View("Index", new OwnersViewModel()
             {
                 Owners = _context.Owners.ToList(),
                 Error = error
             });
         }
-
 
     }
 }

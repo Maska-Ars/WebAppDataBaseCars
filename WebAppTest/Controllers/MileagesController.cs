@@ -26,7 +26,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Edit(int? id, string? newNumber, DateOnly? date, long? value)
         {
             string? error = null;
@@ -62,7 +62,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Delete(int? id)
         {
             string? error = null;
@@ -94,7 +94,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Add(string? number, DateOnly? date, long? value)
         {
             string? error = null;

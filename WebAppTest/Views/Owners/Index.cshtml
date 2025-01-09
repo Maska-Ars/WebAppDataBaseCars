@@ -34,6 +34,12 @@
 </table>
 <p></p>
 <h6>Найденная информация</h6>
+@if (Model.Owners.Count() == 0)
+{
+<p>Не найденно ни одной записи, удовалетворяющей условию</p>
+}
+else
+{
 <table class="database">
     <thead>
         <th>Номер</th>
@@ -54,25 +60,25 @@
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@owner.Id />
                     <input type="text" name="secondName" value=@owner.SecondName />
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@owner.Id />
                     <input type="text" name="name" value=@owner.Name />
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@owner.Id />
                     <input type="text" name="surname" value=@owner.Surname />
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Delete">
+                <form method="post" asp-action="Delete">
                     <input type="hidden" name="id" value=@owner.Id />
                     <input type="submit" value="Удалить" />
                 </form>
@@ -81,11 +87,12 @@
     }
     </tbody>
 </table>
+}
 <p></p>
 <h6>Добавление элемента</h6>
 <div>
     <table class="database">
-        <form method="get" asp-action="Add">
+        <form method="post" asp-action="Add">
             <tr>
                 <td>
                     <input type="text" name="number" required

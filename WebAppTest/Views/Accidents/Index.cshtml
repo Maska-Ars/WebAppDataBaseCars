@@ -17,13 +17,13 @@
 }
 
 @{
-    ViewData["Title"] = "Аварии";
+    ViewData["Title"] = "Происшествия";
 }
 @if (Model.Error != null)
 {
      <div class="error">@Model.Error</div>   
 }
-<h2>Аварии</h2>
+<h2>Происшествия</h2>
 <h6>Фильтр</h6>
 <table class="database">
     <thead>
@@ -50,6 +50,12 @@
 </table>
 <p></p>
 <h6>Найденная информация</h6>
+@if (Model.Accidents.Count() == 0)
+{
+    <p>Не найденно ни одной записи, удовалетворяющей условию</p>
+}
+else
+{
 <table class="database">
     <thead>
         <th>Номер</th>
@@ -62,7 +68,7 @@
     {
         <tr>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@e.Id />
                     <input type="text" name="number" value=@e.Number
                         pattern="^[А-ЯA-Z]{1}[0-9]{3}[А-ЯA-Z]{2}[0-9]{2,3}$"
@@ -70,25 +76,27 @@
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@e.Id />
                     <input type="date" name="date" value=@GetDate(e.Date) />
+                    <input class="sub" type="submit" value="S" />
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@e.Id />
                     <input type="text" name="type" value=@e.Type />
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Edit">
+                <form method="post" asp-action="Edit">
                     <input type="hidden" name="id" value=@e.Id />
-                    <input type="text" name="region" value="@e.Region" />
+                        <input type="text" name="region" value="@e.Region"
+                            style="width: 400px;"/>
                 </form>
             </td>
             <td>
-                <form method="get" asp-action="Delete">
+                <form method="post" asp-action="Delete">
                     <input type="hidden" name="id" value=@e.Id />
                     <input type="submit" value="Удалить" />
                 </form>
@@ -97,11 +105,12 @@
     }
     </tbody>
 </table>
+}
 <p></p>
 <h6>Добавление элемента</h6>
 <div>
     <table class="database">
-        <form method="get" asp-action="Add">
+        <form method="post" asp-action="Add">
             <tr>
                 <td>
                     <input type="text" name="number" required 

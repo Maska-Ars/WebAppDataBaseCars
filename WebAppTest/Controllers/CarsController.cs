@@ -28,7 +28,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Edit(string? id, string? newNumber, string? brand, string? model, string? color)
         {
             string? error = null;
@@ -83,7 +83,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Delete(string? id)
         {
             string? error = null;
@@ -145,7 +145,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Add(string? number, string? brand, string? model, string? color)
         {
             string? error = null;

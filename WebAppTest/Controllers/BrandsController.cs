@@ -25,7 +25,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Edit(string? id, string? title, string? fullTitle, string? country)
         {
             string? error = null;
@@ -60,7 +60,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Delete(string? id)
         {
             string? error = null;
@@ -92,7 +92,7 @@ namespace WebAppTest.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Add(string? title, string? fullTitle, string? country)
         {
             string? error = null;
