@@ -8,14 +8,11 @@ namespace WebAppTest.Controllers
 {
     public class OwnersController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
         private CarsContext _context;
 
-        public OwnersController(ILogger<HomeController> logger)
+        public OwnersController(CarsContext context)
         {
-            _logger = logger;
-            _context = new CarsContext();
+            _context = context;
         }
 
         public IActionResult Index()
@@ -150,7 +147,7 @@ namespace WebAppTest.Controllers
         public IActionResult Add(string? number, string? secondName, string? name, string? surname)
         {
             string? error = null;
-            if (number == null || secondName == null || name == null || surname == null)
+            if (number == null || name == null)
             {
                 error = "Не уаказан один из параметров";
             }

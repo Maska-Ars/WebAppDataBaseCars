@@ -2,19 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using WebAppTest.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebAppTest.Controllers
 {
     public class BrandsController : Controller
     {
-        private readonly ILogger<BrandsController> _logger;
-
         private CarsContext _context;
 
-        public BrandsController(ILogger<BrandsController> logger)
+        public BrandsController(CarsContext context)
         {
-            _logger = logger;
-            _context = new CarsContext();
+            _context = context;
         }
 
         public IActionResult Index()
@@ -78,6 +76,20 @@ namespace WebAppTest.Controllers
                         _context.Brands.Remove(e);
                         _context.SaveChanges();
                     }
+                    catch (DbUpdateException ex)
+                    {
+                        if (ex.InnerException != null)
+                        {
+                            PostgresException inner = (PostgresException)ex.InnerException;
+                            if (inner.SqlState == "23503")
+                                error = $"Нельзя удалить запись, т.к она имеет зависимости в других таблицах";
+                        }
+                        else
+                        {
+                            error = "Произошла непредвиденная ошибка";
+                            Console.WriteLine(ex);
+                        }
+                    }
                     catch (Exception ex)
                     {
                         error = $"Произошла непредвиденная ошибка";
@@ -100,8 +112,16 @@ namespace WebAppTest.Controllers
                 error = "Не уаказан один из параметров";
             else
             {
+    
                 try
                 {
+                    var car = from Brand c in _context.Brands
+                              where c.Title == title
+                              select c;
+                    if (car.Count() == 1)
+                    {
+                        throw new ArgumentException("Запись с данным номером уже существет");
+                    }
                     _context.Brands.Add(new Brand
                     {
                         Title = title,
@@ -124,6 +144,10 @@ namespace WebAppTest.Controllers
                         error = "Произошла непредвиденная ошибка";
                         Console.WriteLine(ex);
                     }
+                }
+                catch (ArgumentException ex)
+                {
+                    error = ex.Message;
                 }
                 catch (Exception ex)
                 {

@@ -7,14 +7,11 @@ namespace WebAppTest.Controllers
 {
     public class MileagesController : Controller
     {
-        private readonly ILogger<MileagesController> _logger;
-
         private CarsContext _context;
 
-        public MileagesController(ILogger<MileagesController> logger)
+        public MileagesController(CarsContext context)
         {
-            _logger = logger;
-            _context = new CarsContext();
+            _context = context;
         }
 
 

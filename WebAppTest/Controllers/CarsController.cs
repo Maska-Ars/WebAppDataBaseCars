@@ -9,14 +9,11 @@ namespace WebAppTest.Controllers
 {
     public class CarsController : Controller
     {
-        private readonly ILogger<CarsController> _logger;
-
         private CarsContext _context;
 
-        public CarsController(ILogger<CarsController> logger)
+        public CarsController(CarsContext context)
         {
-            _logger = logger;
-            _context = new CarsContext();
+            _context = context;
         }
 
         public IActionResult Index()
@@ -50,6 +47,7 @@ namespace WebAppTest.Controllers
                     {
                         _context.Cars.Update(e);
                         _context.SaveChanges();
+                        
                     }
                     catch (DbUpdateException ex)
                     {
@@ -69,7 +67,7 @@ namespace WebAppTest.Controllers
                     catch (Exception ex)
                     {
                         error = $"Произошла непредвиденная ошибка";
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine(ex);
                     }
                 }
                 
@@ -100,6 +98,20 @@ namespace WebAppTest.Controllers
                     {
                         _context.Cars.Remove(e);
                         _context.SaveChanges();
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        if (ex.InnerException != null)
+                        {
+                            PostgresException inner = (PostgresException)ex.InnerException;
+                            if (inner.SqlState == "23503")
+                                error = $"Нельзя удалить запись, т.к она имеет зависимости в других таблицах";
+                        }
+                        else
+                        {
+                            error = "Произошла непредвиденная ошибка";
+                            Console.WriteLine(ex);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -149,12 +161,24 @@ namespace WebAppTest.Controllers
         public IActionResult Add(string? number, string? brand, string? model, string? color)
         {
             string? error = null;
+
             if (number == null || brand == null || model == null || color == null)
+            {
                 error = "Не уаказан один из параметров";
+            }
             else
             {
                 try
                 {
+                    var car = from Car c in _context.Cars
+                              where c.Number == number
+                              select c;
+                    if (car.Count() == 1)
+                    {
+                        error = "Машина с данным номером уже существет";
+                        throw new ArgumentException("Запись с данным номером уже существет");
+                    }
+
                     _context.Cars.Add(new Car
                     {
                         Number = number,
@@ -179,6 +203,10 @@ namespace WebAppTest.Controllers
                         error = "Произошла непредвиденная ошибка";
                         Console.WriteLine(ex);
                     }
+                }
+                catch (ArgumentException ex)
+                {
+                    error = ex.Message;
                 }
                 catch (Exception ex)
                 {

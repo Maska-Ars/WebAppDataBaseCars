@@ -8,12 +8,9 @@ namespace WebAppTest.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        private CarsContext _context;
-
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _context = new CarsContext();
         }
 
         public IActionResult Index()

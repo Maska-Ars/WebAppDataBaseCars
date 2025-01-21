@@ -8,14 +8,12 @@ namespace WebAppTest.Controllers
 {
     public class AccidentsController : Controller
     {
-        private readonly ILogger<AccidentsController> _logger;
 
         private CarsContext _context;
 
-        public AccidentsController(ILogger<AccidentsController> logger)
+        public AccidentsController(CarsContext context)
         {
-            _logger = logger;
-            _context = new CarsContext();
+            _context = context;
         }
 
         public IActionResult Index()
