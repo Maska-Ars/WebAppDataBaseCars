@@ -1,52 +1,47 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using WebAppTest.Models;
+using WebAppDataBaseCars.Models;
 
-namespace WebAppTest.Controllers
+
+namespace WebAppDataBaseCars.Controllers;
+
+public class HomeController(ILogger<HomeController> logger) : Controller
 {
-    public class HomeController : Controller
+    private readonly ILogger<HomeController> _logger = logger;
+
+    public IActionResult Index()
     {
-        private readonly ILogger<HomeController> _logger;
+        return View();
+    }
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+    public IActionResult Cars()
+    {
+        return Redirect("~/Cars/");
+    }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+    public IActionResult Owners()
+    {
+        return Redirect("~/Owners/");
+    }
 
-        public IActionResult Cars()
-        {
-            return Redirect("~/Cars/");
-        }
+    public IActionResult Mileages()
+    {
+        return Redirect("~/Mileages/");
+    }
 
-        public IActionResult Owners()
-        {
-            return Redirect("~/Owners/");
-        }
+    public IActionResult Brands()
+    {
+        return Redirect("~/Brands/");
+    }
 
-        public IActionResult Mileages()
-        {
-            return Redirect("~/Mileages/");
-        }
+    public IActionResult Accidents()
+    {
+        return Redirect("~/Accidents/");
+    }
 
-        public IActionResult Brands()
-        {
-            return Redirect("~/Brands/");
-        }
-
-        public IActionResult Accidents()
-        {
-            return Redirect("~/Accidents/");
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

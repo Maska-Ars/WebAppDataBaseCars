@@ -1,8 +1,9 @@
-﻿namespace WebAppTest.ViewModels
+﻿using WebAppDataBaseCars.Models;
+
+namespace WebAppDataBaseCars.ViewModels;
+public class OwnersViewModel
 {
-    public class OwnersViewModel
-    {
-        public IEnumerable<Owner> Owners { get; set; } = Enumerable.Empty<Owner>();
-        public string? Error { get; set; } = null!;
-    }
+    public IEnumerable<Owner> Owners { get; set; } = [];
+
+    public string? Error { get; set; } = null!;
 }

@@ -1,8 +1,11 @@
-﻿namespace WebAppTest.ViewModels
+﻿using WebAppDataBaseCars.Models;
+
+namespace WebAppDataBaseCars.ViewModels;
+
+public class BrandsViewModel
 {
-    public class BrandsViewModel
-    {
-        public IEnumerable<Brand> Brands { get; set; } = Enumerable.Empty<Brand>();
-        public string? Error { get; set; } = null!;
-    }
+    public IEnumerable<Brand> Brands { get; set; } = [];
+
+    public string? Error { get; set; } = null!;
 }
+

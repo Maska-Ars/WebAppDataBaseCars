@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace WebAppDataBaseCars.Models;
 
 public partial class Accident
 {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+namespace WebAppDataBaseCars.Models;
+
 public partial class Owner
 {
     public int Id { get; set; }

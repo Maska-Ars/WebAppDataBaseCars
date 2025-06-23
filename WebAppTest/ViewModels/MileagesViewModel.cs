@@ -1,8 +1,10 @@
-﻿namespace WebAppTest.ViewModels
-{
-    public class MileagesViewModel
+﻿using WebAppDataBaseCars.Models;
+
+namespace WebAppDataBaseCars.ViewModels;
+
+public class MileagesViewModel
     {
-        public IEnumerable<Mileage> Mileages { get; set; } = Enumerable.Empty<Mileage>();
+        public IEnumerable<Mileage> Mileages { get; set; } = [];
+
         public string? Error { get; set; } = null!;
     }
-}
